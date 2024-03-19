@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="well">
+    <input type= "text" id="msg" value="121211">
+    <button id="btnSend">보내기</button>
+</div>
+
+
+</body>
+<script>
+    document.querySelector("#btnSend").addEventListener('click', function(event) {
+        event.preventDefault();
+        if(socket.readyState !== 1) return;
+        let msg = document.querySelector("#msg").value;
+        socket.send(msg);
+    });
+
+
+</script>
+<script>
+    var socket = null;
+
+    /** 소켓 연결을 위한 handshake 요청 수행 및 소켓 저장*/
+    function connect() {
+        // 소켓 열기
+        var ws = new WebSocket("ws://localhost:8080/replyEcho?bno=1234")
+        socket = ws;
+
+        // 커넥션이 연결되면 수행
+        ws.onopen = function() {
+            console.log('info: connection opened!')
+        }
+
+        // 메시지를 보낼때 마다 수행
+        ws.onmessage = function(event) {
+            console.log("Recieve Message:", event.data + '\n')
+        }
+
+        // 연결이 종료될 때 수행
+        ws.onclose = function(event) {
+            console.log('info: connection closed...')
+            // setTimeout( function() { console.log('test'); }, 1000) // retry connection
+        }
+
+        // 에러 발생 시 수행
+        ws.onerror = function(err) { console.log('Error: ', err)}
+    }
+
+    connect()
+</script>
+</html>
